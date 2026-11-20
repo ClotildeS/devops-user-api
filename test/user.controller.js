@@ -76,4 +76,38 @@ describe('User', () => {
   })
 
 })
+  describe('Update', () => {
+    it('update an existing user', (done) => {
+      const user = {
+        username: 'sergkudinov',
+        firstname: 'Sergei',
+        lastname: 'Kudinov'
+      }
+
+      userController.create(user, (err) => {
+        expect(err).to.equal(null)
+
+        const updatedUser = {
+          username: 'sergkudinov',
+          firstname: 'John',
+          lastname: 'Smith'
+        }
+
+        userController.update(updatedUser, (err, result) => {
+          expect(err).to.equal(null)
+          expect(result).to.equal('OK')
+
+          userController.get(user.username, (err, result) => {
+            expect(err).to.equal(null)
+            expect(result).to.deep.equal({
+              firstname: 'John',
+              lastname: 'Smith'
+            })
+            done()
+          })
+        })
+      })
+    })
+  })
 })
+
