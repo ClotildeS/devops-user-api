@@ -3,7 +3,7 @@ const userController = require('../src/controllers/user')
 const db = require('../src/dbClient')
 
 describe('User', () => {
-  
+
   beforeEach(() => {
     // Clean DB before each test
     db.flushdb()
@@ -36,7 +36,7 @@ describe('User', () => {
       })
     })
 
-    // it('avoid creating an existing user', (done)=> {
+    // it('avoid creating an existing user', (done) => {
     //   // TODO create this test
     //   // Warning: the user already exists
     //   done()
@@ -45,38 +45,39 @@ describe('User', () => {
 
   describe('Get', () => {
 
-  it('get a user by username', (done) => {
-    const user = {
-      username: 'sergkudinov',
-      firstname: 'Sergei',
-      lastname: 'Kudinov'
-    }
+    it('get a user by username', (done) => {
+      const user = {
+        username: 'sergkudinov',
+        firstname: 'Sergei',
+        lastname: 'Kudinov'
+      }
 
-    // Create a user before testing GET
-    userController.create(user, (err) => {
-      expect(err).to.equal(null)
-
-      userController.get(user.username, (err, result) => {
+      // Create a user before testing GET
+      userController.create(user, (err) => {
         expect(err).to.equal(null)
-        expect(result).to.deep.equal({
-          firstname: 'Sergei',
-          lastname: 'Kudinov'
+
+        userController.get(user.username, (err, result) => {
+          expect(err).to.equal(null)
+          expect(result).to.deep.equal({
+            firstname: 'Sergei',
+            lastname: 'Kudinov'
+          })
+          done()
         })
+      })
+    })
+
+    it('cannot get a user when it does not exist', (done) => {
+      userController.get('unknown_user', (err, result) => {
+        expect(err).to.not.equal(null)
+        expect(result).to.equal(null)
         done()
       })
     })
   })
 
-  it('cannot get a user when it does not exist', (done) => {
-    userController.get('unknown_user', (err, result) => {
-      expect(err).to.not.equal(null)
-      expect(result).to.equal(null)
-      done()
-    })
-  })
-
-})
   describe('Update', () => {
+
     it('update an existing user', (done) => {
       const user = {
         username: 'sergkudinov',
@@ -109,5 +110,31 @@ describe('User', () => {
       })
     })
   })
-})
 
+  describe('Delete', () => {
+
+    it('delete an existing user', (done) => {
+      const user = {
+        username: 'sergkudinov',
+        firstname: 'Sergei',
+        lastname: 'Kudinov'
+      }
+
+      userController.create(user, (err) => {
+        expect(err).to.equal(null)
+
+        userController.delete(user.username, (err, result) => {
+          expect(err).to.equal(null)
+          expect(result).to.equal(1)
+
+          userController.get(user.username, (err, result) => {
+            expect(err).to.not.equal(null)
+            expect(result).to.equal(null)
+            done()
+          })
+        })
+      })
+    })
+  })
+
+})
